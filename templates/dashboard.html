@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <h1>Welcome, {{ current_user.username }}!</h1>
+        <p>Your Stock Portfolio Dashboard</p>
+    </header>
+
+    <div class="dashboard-grid">
+        <section class="portfolio-summary">
+            <h2>Portfolio Summary</h2>
+            {% if current_user.portfolios.all() %}
+                <ul>
+                {% for portfolio in current_user.portfolios %}
+                    <li>
+                        <h3>{{ portfolio.name }}</h3>
+                        <p>Total Value: $XX,XXX.XX</p>
+                        <a href="#" class="button">View Details</a>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>You don't have any portfolios yet.</p>
+            {% endif %}
+            <a href="#" class="button">Create New Portfolio</a>
+        </section>
+
+        <section class="market-overview">
+            <h2>Market Overview</h2>
+            <p>Market data will be displayed here.</p>
+            <!-- You can add real-time market data here -->
+        </section>
+
+        <section class="recent-activity">
+            <h2>Recent Activity</h2>
+            <ul>
+                <!-- Add more activity items -->
+            </ul>
+        </section>
+
+        <section class="quick-actions">
+            <h2>Quick Actions</h2>
+            <a href="#" class="button">Add New Stock</a>
+            <a href="#" class="button">Run Analysis</a>
+            <a href="#" class="button">View Reports</a>
+        </section>
+    </div>
+</div>
+{% endblock %}
