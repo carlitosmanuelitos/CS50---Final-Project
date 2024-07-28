@@ -13,7 +13,7 @@
             <ul>
                 <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
                 {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('main.portfolio') }}">Portfolio</a></li>
+                    <li><a href="{{ url_for('portfolio.portfolio') }}">Portfolio</a></li>
                     <li><a href="{{ url_for('main.analytics') }}">Analytics</a></li>
                     <li><a href="{{ url_for('main.ai_recommendations') }}">AI Recommendations</a></li>
                     <li><a href="{{ url_for('main.profile') }}">Profile</a></li>

@@ -1,15 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Welcome, {{ name }}!</h1>
-<h2>Your Portfolios</h2>
-{% if current_user.portfolios.all() %}
-    <ul>
-    {% for portfolio in current_user.portfolios %}
-        <li>{{ portfolio.name }}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>You don't have any portfolios yet. <a href="#">Create one now!</a></p>
-{% endif %}
+<h1>Your Portfolios</h1>
+
+<form action="{{ url_for('portfolio.create_portfolio') }}" method="post">
+    <input type="text" name="name" placeholder="New Portfolio Name" required>
+    <button type="submit">Create Portfolio</button>
+</form>
+
+{% for portfolio in portfolios %}
+<div class="portfolio-summary">
+    <h2>{{ portfolio.name }}</h2>
+    <p>Total Value: ${{ "%.2f"|format(portfolio.total_value) }}</p>
+    <p>Total Gain/Loss: ${{ "%.2f"|format(portfolio.total_gain_loss) }}</p>
+    <a href="{{ url_for('portfolio.portfolio_detail', portfolio_id=portfolio.id) }}">View Details</a>
+</div>
+{% endfor %}
 {% endblock %}
