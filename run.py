@@ -1,3 +1,23 @@
+"""
+Entry point for the Stock AI Portfolio Tracking app.
+
+This script initializes and runs the Flask application. It imports the `create_app` function
+from the `app` package to create an instance of the app. The script also prints various
+informative details about the application, such as the current working directory, template
+folder, static folder, available templates, registered blueprints, and URL map.
+
+Imports:
+    from app import create_app: Imports the application factory function.
+    import os: Imports the operating system module to interact with the file system.
+
+Usage:
+    Run this script to start the Flask application. The application will be run in debug
+    mode on port 5001.
+
+Example:
+    $ python run.py
+
+"""
 from app import create_app
 import os
 

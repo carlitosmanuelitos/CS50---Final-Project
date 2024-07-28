@@ -19,11 +19,6 @@ def dashboard():
         return redirect(url_for('main.investment_survey'))
     return render_template('dashboard.html')
 
-@main.route('/portfolio')
-@login_required
-def portfolio():
-    portfolios = Portfolio.query.filter_by(user_id=current_user.id).all()
-    return render_template('portfolio.html', portfolios=portfolios)
 
 @main.route('/analytics')
 @login_required
