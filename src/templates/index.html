@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Stock Portfolio Analyzer{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1 class="hero-title">Welcome to <span class="text-primary">Stock Portfolio Analyzer</span></h1>
+    <p class="hero-description">Empower your investment decisions with AI-driven analytics and personalized recommendations.</p>
+    <div class="cta-buttons">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Get started</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Register</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="features grid grid-3">
+    <div class="feature-card">
+        <h2 class="feature-title">AI-Powered Analysis</h2>
+        <p class="feature-description">Leverage cutting-edge AI algorithms to analyze your portfolio and receive personalized insights.</p>
+    </div>
+    <div class="feature-card">
+        <h2 class="feature-title">Real-time Data</h2>
+        <p class="feature-description">Stay updated with real-time market data and make informed decisions based on the latest information.</p>
+    </div>
+    <div class="feature-card">
+        <h2 class="feature-title">Portfolio Optimization</h2>
+        <p class="feature-description">Optimize your portfolio with intelligent suggestions tailored to your investment goals and risk tolerance.</p>
+    </div>
+</div>
+{% endblock %}
