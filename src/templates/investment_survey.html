@@ -189,33 +189,7 @@
                         {% endfor %}
                     </div>
                 </div>
-
                 <!-- Conditional Questions -->
-                <div id="conditional-questions" style="display: none;">
-                    <div class="investment-survey-form-group">
-                        {{ form.open_to_higher_risk.label(class="investment-survey-form-label") }}
-                        <div class="box-select">
-                            {% for value, label in form.open_to_higher_risk.choices %}
-                                <div class="box-select-item">
-                                    <input type="radio" name="open_to_higher_risk" id="higher-risk-{{ value }}" value="{{ value }}">
-                                    <label for="higher-risk-{{ value }}">{{ label }}</label>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="investment-survey-form-group">
-                        {{ form.interested_in_growth_stocks.label(class="investment-survey-form-label") }}
-                        <div class="box-select">
-                            {% for value, label in form.interested_in_growth_stocks.choices %}
-                                <div class="box-select-item">
-                                    <input type="radio" name="interested_in_growth_stocks" id="growth-stocks-{{ value }}" value="{{ value }}">
-                                    <label for="growth-stocks-{{ value }}">{{ label }}</label>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
             </div>
 
             {{ form.submit(class="investment-survey-submit-btn") }}
@@ -248,24 +222,6 @@
 
     riskToleranceSlider.addEventListener('input', checkConditionalQuestions);
 
-    // Conditional questions logic
-    function checkConditionalQuestions() {
-        const riskTolerance = parseInt(riskToleranceHidden.value);
-        const investmentHorizon = document.querySelector('input[name="investment_horizon"]:checked')?.value;
-
-        if ((riskTolerance <= 2) || (investmentHorizon === 'long')) {
-            conditionalQuestions.style.display = 'block';
-        } else {
-            conditionalQuestions.style.display = 'none';
-        }
-    }
-
-    document.querySelectorAll('input[name="investment_horizon"]').forEach(input => {
-        input.addEventListener('change', checkConditionalQuestions);
-    });
-
-    // Initial check
-    checkConditionalQuestions();
 
     document.getElementById('investment-survey-form').addEventListener('submit', function(e) {
         // Update hidden fields before form submission

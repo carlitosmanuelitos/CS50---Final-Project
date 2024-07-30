@@ -76,8 +76,6 @@ def investment_survey():
             # Handle boolean fields
             profile.sustainable_investing = form.sustainable_investing.data == 'yes'
             profile.has_existing_portfolio = form.has_existing_portfolio.data == 'yes'
-            profile.open_to_higher_risk = form.open_to_higher_risk.data == 'yes'
-            profile.interested_in_growth_stocks = form.interested_in_growth_stocks.data == 'yes'
             
             db.session.add(profile)
             current_user.has_completed_survey = True

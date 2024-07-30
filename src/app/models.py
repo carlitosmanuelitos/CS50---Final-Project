@@ -109,8 +109,6 @@ class InvestmentProfile(db.Model):
     
     # Portfolio Review
     has_existing_portfolio = db.Column(db.Boolean)
-    open_to_higher_risk = db.Column(db.Boolean)
-    interested_in_growth_stocks = db.Column(db.Boolean)
     
     last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

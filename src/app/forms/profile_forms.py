@@ -138,24 +138,9 @@ class InvestmentSurveyForm(FlaskForm):
         ('no', 'No')
     ])
 
-    open_to_higher_risk = RadioField('Are you open to considering slightly higher risk options for potentially better returns?', 
-                                     choices=[('yes', 'Yes'), ('no', 'No')],
-                                     validators=[Optional()])
-    interested_in_growth_stocks = RadioField('Are you interested in growth stocks or other high-risk, high-reward investments?', 
-                                             choices=[('yes', 'Yes'), ('no', 'No')],
-                                             validators=[Optional()])
 
     submit = SubmitField('Submit')
 
-    def validate_open_to_higher_risk(self, field):
-        if int(self.risk_tolerance.data) <= 2 or self.investment_horizon.data == 'long':
-            if not field.data:
-                raise ValidationError('This field is required for low risk tolerance or long-term investment horizon.')
-
-    def validate_interested_in_growth_stocks(self, field):
-        if int(self.risk_tolerance.data) <= 2 or self.investment_horizon.data == 'long':
-            if not field.data:
-                raise ValidationError('This field is required for low risk tolerance or long-term investment horizon.')
 
 class UpdateProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=64)])
