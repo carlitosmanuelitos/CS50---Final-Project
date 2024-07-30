@@ -16,10 +16,22 @@
 
 <h2>Investment Profile</h2>
 {% if investment_profile %}
-    <p>Risk Tolerance: {{ investment_profile.risk_tolerance }}/5</p>
+    <p>User ID: {{ investment_profile.user_id }}</p>
+    <p>Age: {{ investment_profile.age }}</p>
+    <p>Country: {{ investment_profile.country }}</p>
+    <p>Education Level: {{ investment_profile.education_level }}</p>
+    <p>Annual Income: {{ investment_profile.annual_income }}</p>
+    <p>Monthly Investment: {{ investment_profile.monthly_investment }}</p>
+    <p>Risk Tolerance: {{ investment_profile.risk_tolerance }}</p>
     <p>Investment Horizon: {{ investment_profile.investment_horizon }}</p>
+    <p>Preferred Industries: {{ investment_profile.preferred_industries }}</p>
+    <p>Investment Experience: {{ investment_profile.investment_experience }}</p>
+    <p>Years Investing: {{ investment_profile.years_investing }}</p>
     <p>Primary Investment Goal: {{ investment_profile.primary_investment_goal }}</p>
-    <!-- Add more fields as needed -->
+    <p>Secondary Investment Goals: {{ investment_profile.secondary_investment_goals }}</p>
+    <p>Sustainable Investing: {{ investment_profile.sustainable_investing }}</p>
+    <p>Has Existing Portfolio: {{ investment_profile.has_existing_portfolio }}</p>
+    <p>Last Updated: {{ investment_profile.last_updated }}</p>
     
     <a href="{{ url_for('main.investment_survey') }}" class="btn btn-primary">Update Investment Profile</a>
 {% else %}
