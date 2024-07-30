@@ -37,46 +37,60 @@ def index():
         return redirect(url_for('main.dashboard'))
     return render_template('index.html')
 
-@main.route('/profile')
-@login_required
-def profile():
-    return render_template('profile.html', user=current_user)
-
-@main.route('/investment-survey', methods=['GET', 'POST'])
-@login_required
-def investment_survey():
-    form = InvestmentSurveyForm(obj=current_user.investment_profile)
-    
-    if form.validate_on_submit():
-        if current_user.investment_profile:
-            form.populate_obj(current_user.investment_profile)
-            current_user.investment_profile.last_updated = datetime.utcnow()
-        else:
-            new_profile = InvestmentProfile(user_id=current_user.id)
-            form.populate_obj(new_profile)
-            db.session.add(new_profile)
-        
-        db.session.commit()
-        flash('Investment profile updated successfully!', 'success')
-        return redirect(url_for('main.profile'))
-
-    return render_template('investment_survey.html', form=form)
-
-@main.route('/update-profile', methods=['GET', 'POST'])
-@login_required
-def update_profile():
-    form = UpdateProfileForm(obj=current_user)
-    
-    if form.validate_on_submit():
-        form.populate_obj(current_user)
-        db.session.commit()
-        flash('Profile updated successfully!', 'success')
-        return redirect(url_for('main.profile'))
-    
-    return render_template('update_profile.html', form=form)
-
 @main.route('/dashboard')
 @login_required
 def dashboard():
     # Implement dashboard logic here
     return render_template('dashboard.html')
+
+@main.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    form = UpdateProfileForm(obj=current_user)
+    investment_profile = InvestmentProfile.query.filter_by(user_id=current_user.id).first()
+    if form.validate_on_submit():
+        form.populate_obj(current_user)
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('main.profile'))
+    return render_template('profile.html', form=form, user=current_user, investment_profile=investment_profile)
+
+
+@main.route('/investment-survey', methods=['GET', 'POST'])
+@login_required
+def investment_survey():
+    profile = InvestmentProfile.query.filter_by(user_id=current_user.id).first()
+    form = InvestmentSurveyForm(obj=profile) if profile else InvestmentSurveyForm()
+    
+    if form.validate_on_submit():
+        if not profile:
+            profile = InvestmentProfile(user_id=current_user.id)
+        
+        try:
+            form.populate_obj(profile)
+            
+            # Handle multi-select fields
+            profile.preferred_industries = ','.join(form.preferred_industries.data)
+            profile.secondary_investment_goals = ','.join(form.secondary_investment_goals.data)
+            
+            # Handle boolean fields
+            profile.sustainable_investing = form.sustainable_investing.data == 'yes'
+            profile.has_existing_portfolio = form.has_existing_portfolio.data == 'yes'
+            profile.open_to_higher_risk = form.open_to_higher_risk.data == 'yes'
+            profile.interested_in_growth_stocks = form.interested_in_growth_stocks.data == 'yes'
+            
+            db.session.add(profile)
+            current_user.has_completed_survey = True
+            db.session.commit()
+            flash('Your investment profile has been updated successfully.', 'success')
+            return redirect(url_for('main.profile'))
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error saving profile: {str(e)}")
+            flash('An error occurred while saving your profile. Please try again.', 'error')
+    elif form.errors:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error in {field}: {error}", 'error')
+    
+    return render_template('investment_survey.html', form=form)

@@ -30,24 +30,11 @@ def register():
 
     form = RegisterForm()
     if form.validate_on_submit():
-        # Validate matching passwords
-        if form.password.data != form.confirm_password.data:
-            flash('Passwords do not match.', 'error')
-            return redirect(url_for('auth.register'))
-
-        # Check if username or email already exists
-        existing_user = User.query.filter((User.username == form.username.data) | (User.email == form.email.data)).first()
-        if existing_user:
-            flash('Username or email already exists.', 'error')
-            return redirect(url_for('auth.register'))
-
-        # Create new user
         new_user = User(email=form.email.data, username=form.username.data)
         new_user.set_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
-        flash('Registration successful. Please log in.', 'success')
-        return redirect(url_for('auth.login'))
+        return render_template('login.html', form=LoginForm(), show_notification=True, notification_message='Registration successful. Please log in.')
     
     return render_template('register.html', form=form)
 
@@ -62,13 +49,15 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
+            if not user.has_completed_survey:
+                return redirect(url_for('main.investment_survey'))
             return redirect(next_page or url_for('main.dashboard'))
-        flash('Invalid email or password', 'error')
+        flash('Invalid email or password. Please try again.', 'error')
     return render_template('login.html', form=form)
 
 @auth.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out.', 'success')
+    flash('You have been logged out successfully.', 'success')
     return redirect(url_for('main.index'))

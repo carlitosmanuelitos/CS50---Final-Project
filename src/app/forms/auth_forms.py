@@ -11,9 +11,7 @@ Classes:
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
-from ..models import User  # Change this import
-import email_validator
-
+from ..models import User
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=64)])
@@ -31,6 +29,14 @@ class RegisterForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('Email already registered. Please use a different email.')
+
+    def validate_password(self, password):
+        if len(password.data) < 8:
+            raise ValidationError('Password must be at least 8 characters long.')
+        if not any(char.isdigit() for char in password.data):
+            raise ValidationError('Password must contain at least one number.')
+        if not any(char.isupper() for char in password.data):
+            raise ValidationError('Password must contain at least one uppercase letter.')
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])

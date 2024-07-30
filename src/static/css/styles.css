@@ -134,3 +134,311 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* Authentication pages */
+.auth-container {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.auth-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-label-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-checkbox {
+    width: 1rem;
+    height: 1rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.auth-footer a {
+    color: #6366f1;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+/* Investment Survey Styles */ /* Investment Survey Styles */ /* Investment Survey Styles */ /* Investment Survey Styles */
+
+.investment-survey-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+.investment-survey-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.investment-survey-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.investment-survey-description {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.investment-survey-section {
+    margin-bottom: 2rem;
+}
+
+.investment-survey-section-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.investment-survey-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.investment-survey-form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.investment-survey-form-input,
+.investment-survey-form-select {
+    width: 100%;
+    padding: 0.65rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.investment-survey-form-input:focus,
+.investment-survey-form-select:focus {
+    outline: none;
+    border-color: #007aff;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+.investment-survey-submit-btn {
+    display: inline-block;
+    background-color: #007aff;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.investment-survey-submit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .investment-survey-container {
+        padding: 1rem;
+    }
+
+    .investment-survey-card {
+        padding: 1.5rem;
+    }
+
+    .investment-survey-title {
+        font-size: 1.5rem;
+    }
+
+    .investment-survey-section-title {
+        font-size: 1.125rem;
+    }
+}
+
+
+.risk-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Multiple Select Styling */
+.investment-survey-form-select[multiple] {
+    height: auto;
+    min-height: 100px;
+}
+
+
+/* Add these styles to your existing CSS file */
+
+.slider-container {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.slider-labels span {
+    font-size: 0.8rem;
+    color: #666;
+    text-align: center;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+}
+
+input[type="range"]:hover {
+    opacity: 1;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007aff;
+    cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007aff;
+    cursor: pointer;
+}
+
+.box-select {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center; 
+    text-align: center;      
+}
+
+.box-select-item {
+    position: relative;
+}
+
+.box-select-item input[type="radio"],
+.box-select-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.box-select-item label {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    border: 2px solid #ddd;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.box-select-item input[type="radio"]:checked + label,
+.box-select-item input[type="checkbox"]:checked + label {
+    background-color: #007aff;
+    color: white;
+    border-color: #007aff;
+}
+
+.box-select-item label:hover {
+    background-color: #e0e0e0;
+}
+
+.box-select-item input[type="radio"]:checked + label:hover,
+.box-select-item input[type="checkbox"]:checked + label:hover {
+    background-color: #0056b3;
+}
+
+.box-select.multiple {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.box-select-item label {
+    font-size: 0.9rem; /* Adjust this value as needed */
+    padding: 8px 12px; /* Optionally adjust padding to maintain proportions */
+}

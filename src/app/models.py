@@ -18,6 +18,9 @@ class User(UserMixin, db.Model):
     portfolios = db.relationship('Portfolio', backref='owner', lazy='dynamic')
     investment_profile = db.relationship('InvestmentProfile', backref='user', uselist=False)
     transactions = db.relationship('Transaction', backref='user', lazy='dynamic')
+    has_completed_survey = db.Column(db.Boolean, default=False)
+
+
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -81,18 +84,38 @@ class StockMetadata(db.Model):
 class InvestmentProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
-    risk_tolerance = db.Column(db.Integer)
+    
+    # Personal Information
+    age = db.Column(db.Integer)
+    country = db.Column(db.String(2))
+    education_level = db.Column(db.String(20))
+    
+    # Financial Information
     annual_income = db.Column(db.Float)
     monthly_investment = db.Column(db.Float)
     net_worth = db.Column(db.Float)
-    preferred_industries = db.Column(db.String(200))
-    age = db.Column(db.Integer)
-    education_level = db.Column(db.String(50))
-    country = db.Column(db.String(2))
+    
+    # Investment Preferences
+    risk_tolerance = db.Column(db.Integer)
     investment_horizon = db.Column(db.String(20))
-    investment_experience = db.Column(db.String(3))
+    preferred_industries = db.Column(db.String(200))  # Store as comma-separated values
+    investment_experience = db.Column(db.Integer)
     years_investing = db.Column(db.Integer)
+    
+    # Investment Goals
+    primary_investment_goal = db.Column(db.String(50))
+    secondary_investment_goals = db.Column(db.String(200))  # Store as comma-separated values
+    sustainable_investing = db.Column(db.Boolean)
+    
+    # Portfolio Review
+    has_existing_portfolio = db.Column(db.Boolean)
+    open_to_higher_risk = db.Column(db.Boolean)
+    interested_in_growth_stocks = db.Column(db.Boolean)
+    
     last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<InvestmentProfile {self.user_id}>'
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)

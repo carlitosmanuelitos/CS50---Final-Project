@@ -1,24 +1,41 @@
 {% extends "base.html" %}
 
+{% block title %}Login - Stock Portfolio Analyzer{% endblock %}
+
 {% block content %}
 <div class="auth-container">
-    <h2>Login</h2>
-    <form method="POST" action="{{ url_for('auth.login') }}">
+    <h1 class="auth-title">Login</h1>
+    <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form">
+        {{ form.hidden_tag() }}
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" required>
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-input") }}
+            {% for error in form.email.errors %}
+                <span class="error-message">{{ error }}</span>
+            {% endfor %}
         </div>
         <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" required>
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-input") }}
+            {% for error in form.password.errors %}
+                <span class="error-message">{{ error }}</span>
+            {% endfor %}
         </div>
         <div class="form-group">
-            <label for="remember">
-                <input type="checkbox" name="remember" id="remember"> Remember me
-            </label>
+            {{ form.remember.label(class="form-label-inline") }}
+            {{ form.remember(class="form-checkbox") }}
         </div>
-        <button type="submit" class="cta-button">Login</button>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary btn-block") }}
+        </div>
     </form>
-    <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+    <p class="auth-footer">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
 </div>
+{% endblock %}
+{% block additional_scripts %}
+{% if show_notification %}
+<script>
+    showNotification('{{ notification_message }}');
+</script>
+{% endif %}
 {% endblock %}
