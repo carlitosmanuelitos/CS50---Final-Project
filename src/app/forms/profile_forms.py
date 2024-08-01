@@ -14,11 +14,6 @@ from wtforms.validators import DataRequired, Email, NumberRange, Length
 from wtforms.validators import DataRequired, Optional
 
 
-
-from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, FloatField, SelectField, SelectMultipleField, SubmitField, HiddenField, RadioField
-from wtforms.validators import DataRequired, Email, NumberRange, Length, Optional, ValidationError
-
 class InvestmentSurveyForm(FlaskForm):
     # Personal Information
     age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=18, max=120)])

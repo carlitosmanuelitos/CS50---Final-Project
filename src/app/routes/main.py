@@ -40,7 +40,7 @@ def index():
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    # Implement dashboard logic here
+
     return render_template('dashboard.html')
 
 @main.route('/profile', methods=['GET', 'POST'])

@@ -1,41 +1,108 @@
 {% extends "base.html" %}
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="alert alert-{{ category }}">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% endblock %}
+
 
 {% block content %}
-<h1>Profile</h1>
-<h2>Account Details</h2>
-<p>Username: {{ user.username }}</p>
-<p>Email: {{ user.email }}</p>
-
-<h2>Investment Profile</h2>
-{% if investment_profile %}
-    <p>User ID: {{ investment_profile.user_id }}</p>
-    <p>Age: {{ investment_profile.age }}</p>
-    <p>Country: {{ investment_profile.country }}</p>
-    <p>Education Level: {{ investment_profile.education_level }}</p>
-    <p>Annual Income: {{ investment_profile.annual_income }}</p>
-    <p>Monthly Investment: {{ investment_profile.monthly_investment }}</p>
-    <p>Risk Tolerance: {{ investment_profile.risk_tolerance }}</p>
-    <p>Investment Horizon: {{ investment_profile.investment_horizon }}</p>
-    <p>Preferred Industries: {{ investment_profile.preferred_industries }}</p>
-    <p>Investment Experience: {{ investment_profile.investment_experience }}</p>
-    <p>Years Investing: {{ investment_profile.years_investing }}</p>
-    <p>Primary Investment Goal: {{ investment_profile.primary_investment_goal }}</p>
-    <p>Secondary Investment Goals: {{ investment_profile.secondary_investment_goals }}</p>
-    <p>Sustainable Investing: {{ investment_profile.sustainable_investing }}</p>
-    <p>Has Existing Portfolio: {{ investment_profile.has_existing_portfolio }}</p>
-    <p>Last Updated: {{ investment_profile.last_updated }}</p>
+<div class="profile-container">
+    <h1 class="profile-title">Profile</h1>
     
-    <a href="{{ url_for('main.investment_survey') }}" class="btn btn-primary">Update Investment Profile</a>
-{% else %}
-    <p>You haven't completed the investment survey yet.</p>
-    <a href="{{ url_for('main.investment_survey') }}" class="btn btn-primary">Complete Investment Survey</a>
-{% endif %}
+    <div class="profile-section">
+        <h2 class="section-title">Account Details</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Username</span>
+                <span class="info-value">{{ user.username }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email</span>
+                <span class="info-value">{{ user.email }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-section">
+        <h2 class="section-title">Investment Profile</h2>
+        {% if investment_profile %}
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">User ID</span>
+                    <span class="info-value">{{ investment_profile.user_id }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Age</span>
+                    <span class="info-value">{{ investment_profile.age }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Country</span>
+                    <span class="info-value">{{ investment_profile.country }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Education</span>
+                    <span class="info-value">{{ investment_profile.education_level }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Annual Income</span>
+                    <span class="info-value">€{{ investment_profile.annual_income }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Monthly Investment</span>
+                    <span class="info-value">€{{ investment_profile.monthly_investment }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Risk Tolerance</span>
+                    <span class="info-value">{{ investment_profile.risk_tolerance }}/5</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Investment Horizon</span>
+                    <span class="info-value">{{ investment_profile.investment_horizon }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Experience</span>
+                    <span class="info-value">{{ investment_profile.investment_experience }}/5</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Years Investing</span>
+                    <span class="info-value">{{ investment_profile.years_investing }}</span>
+                </div>
+                <div class="info-item full-width">
+                    <span class="info-label">Preferred Industries</span>
+                    <span class="info-value">
+                        {{ investment_profile.preferred_industries.split(',')
+                           |map('replace', '_', ' ')
+                           |map('capitalize')
+                           |join(', ') }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Primary Goal</span>
+                    <span class="info-value">{{ investment_profile.primary_investment_goal|replace('_', ' ')|title }}</span>
+                </div>
+                <div class="info-item full-width">
+                    <span class="info-label">Secondary Goals</span>
+                    <span class="info-value">
+                        {{ investment_profile.secondary_investment_goals.split(',')
+                           |map('replace', '_', ' ')
+                           |map('capitalize')
+                           |join(', ') }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Sustainable Investing</span>
+                    <span class="info-value">{{ 'Yes' if investment_profile.sustainable_investing else 'No' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Last Updated</span>
+                    <span class="info-value">{{ investment_profile.last_updated.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+            </div>
+            <a href="{{ url_for('main.investment_survey') }}" class="update-button">Update Investment Profile</a>
+        {% else %}
+            <p class="no-profile">You haven't completed the investment survey yet.</p>
+            <a href="{{ url_for('main.investment_survey') }}" class="update-button">Complete Investment Survey</a>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

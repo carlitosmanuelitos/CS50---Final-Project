@@ -1,4 +1,5 @@
-/* Base styles */
+/* Base styles */ /* Base styles */ /* Base styles */ /* Base styles */
+
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
@@ -68,7 +69,8 @@ body {
     background-color: #f3f4f6;
 }
 
-/* Hero section */
+/* Hero section */ /* Hero section */ /* Hero section */ /* Hero section */
+
 .hero {
     text-align: center;
     padding: 4rem 0;
@@ -77,10 +79,6 @@ body {
 .hero-title {
     font-size: 3rem;
     margin-bottom: 1rem;
-}
-
-.highlight {
-    color: #6366f1;
 }
 
 .hero-description {
@@ -135,7 +133,10 @@ body {
     }
 }
 
-/* Authentication pages */
+
+
+/* Authentication pages */ /* Authentication pages */ /* Authentication pages */ /* Authentication pages */
+
 .auth-container {
     max-width: 400px;
     margin: 2rem auto;
@@ -211,8 +212,6 @@ body {
 
 
 
-
-
 /* Investment Survey Styles */ /* Investment Survey Styles */ /* Investment Survey Styles */ /* Investment Survey Styles */
 
 .investment-survey-container {
@@ -278,13 +277,13 @@ body {
 .investment-survey-form-input:focus,
 .investment-survey-form-select:focus {
     outline: none;
-    border-color: #007aff;
+    border-color: #6366f1;
     box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
 }
 
 .investment-survey-submit-btn {
     display: inline-block;
-    background-color: #007aff;
+    background-color: #6366f1;
     color: #fff;
     font-size: 1rem;
     font-weight: bold;
@@ -296,7 +295,7 @@ body {
 }
 
 .investment-survey-submit-btn:hover {
-    background-color: #0056b3;
+    background-color: #6366f1;
 }
 
 /* Responsive design */
@@ -318,15 +317,6 @@ body {
     }
 }
 
-
-.risk-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 5px;
-    font-size: 0.8rem;
-    color: #666;
-}
-
 /* Multiple Select Styling */
 .investment-survey-form-select[multiple] {
     height: auto;
@@ -334,7 +324,7 @@ body {
 }
 
 
-/* Add these styles to your existing CSS file */
+/* Slider Styles */ /* Slider Styles */ /* Slider Styles */
 
 .slider-container {
     width: 100%;
@@ -354,13 +344,17 @@ body {
 }
 
 input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
     width: 100%;
     height: 10px;
     border-radius: 5px;
-    background: #d3d3d3;
+    background: #6366f1;
     outline: none;
     opacity: 0.7;
-    transition: opacity .2s;
+    transition: opacity 0.2s, background-color 0.3s;
+    margin: 0;
+    padding: 0;
 }
 
 input[type="range"]:hover {
@@ -370,20 +364,82 @@ input[type="range"]:hover {
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 21px;
+    height: 21px;
     border-radius: 50%;
-    background: #007aff;
+    background: #6366f1;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: -5.5px;
+    border: none;
 }
 
 input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: 21px;
+    height: 21px;
     border-radius: 50%;
-    background: #007aff;
+    background: #6366f1;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: -5.5px;
+    border: none;
 }
+
+input[type="range"]::-ms-thumb {
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    background: #6366f1;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: -5.5px;
+    border: none;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover,
+input[type="range"]::-moz-range-thumb:hover,
+input[type="range"]::-ms-thumb:hover {
+    background: #4f46e5;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 10px;
+    cursor: pointer;
+    background: #6366f1;
+    border-radius: 5px;
+    border: none;
+}
+
+input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 10px;
+    cursor: pointer;
+    background: #6366f1;
+    border-radius: 5px;
+    border: none;
+}
+
+input[type="range"]::-ms-track {
+    width: 100%;
+    height: 10px;
+    cursor: pointer;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+
+input[type="range"]::-ms-fill-lower {
+    background: #6366f1;
+    border-radius: 5px;
+}
+
+input[type="range"]::-ms-fill-upper {
+    background: #6366f1;
+    border-radius: 5px;
+}
+
+/* Box Select Styles */ /* Box Select Styles */ /* Box Select Styles */
 
 .box-select {
     display: flex;
@@ -419,9 +475,9 @@ input[type="range"]::-moz-range-thumb {
 
 .box-select-item input[type="radio"]:checked + label,
 .box-select-item input[type="checkbox"]:checked + label {
-    background-color: #007aff;
+    background-color: #6366f1;
     color: white;
-    border-color: #007aff;
+    border-color: #6366f1;
 }
 
 .box-select-item label:hover {
@@ -430,7 +486,7 @@ input[type="range"]::-moz-range-thumb {
 
 .box-select-item input[type="radio"]:checked + label:hover,
 .box-select-item input[type="checkbox"]:checked + label:hover {
-    background-color: #0056b3;
+    background-color: #6366f1;
 }
 
 .box-select.multiple {
@@ -442,3 +498,88 @@ input[type="range"]::-moz-range-thumb {
     font-size: 0.9rem; /* Adjust this value as needed */
     padding: 8px 12px; /* Optionally adjust padding to maintain proportions */
 }
+
+
+
+
+
+
+/* Profile Styles */ /* Profile Styles */ /* Profile Styles */ /* Profile Styles */
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.profile-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+.profile-section {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.update-button {
+    display: inline-block;
+    background-color: #6366f1;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.update-button:hover {
+    background-color: #4f46e5;
+}
+
+.no-profile {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 1rem;
+}   
