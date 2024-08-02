@@ -28,6 +28,39 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+class InvestmentProfile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
+    
+    # Personal Information
+    age = db.Column(db.Integer)
+    country = db.Column(db.String(2))
+    education_level = db.Column(db.String(20))
+    
+    # Financial Information
+    annual_income = db.Column(db.Float)
+    monthly_investment = db.Column(db.Float)
+    net_worth = db.Column(db.Float)
+    
+    # Investment Preferences
+    risk_tolerance = db.Column(db.Integer)
+    investment_horizon = db.Column(db.String(20))
+    preferred_industries = db.Column(db.String(200))  # Store as comma-separated values
+    investment_experience = db.Column(db.Integer)
+    years_investing = db.Column(db.Integer)
+    
+    # Investment Goals
+    primary_investment_goal = db.Column(db.String(50))
+    secondary_investment_goals = db.Column(db.String(200))  # Store as comma-separated values
+    sustainable_investing = db.Column(db.Boolean)
+    
+    # Portfolio Review
+    has_existing_portfolio = db.Column(db.Boolean)
+    
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<InvestmentProfile {self.user_id}>'
 
 class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -80,40 +113,6 @@ class StockMetadata(db.Model):
     debt = db.Column(db.Float)
     description = db.Column(db.Text)
     last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-class InvestmentProfile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
-    
-    # Personal Information
-    age = db.Column(db.Integer)
-    country = db.Column(db.String(2))
-    education_level = db.Column(db.String(20))
-    
-    # Financial Information
-    annual_income = db.Column(db.Float)
-    monthly_investment = db.Column(db.Float)
-    net_worth = db.Column(db.Float)
-    
-    # Investment Preferences
-    risk_tolerance = db.Column(db.Integer)
-    investment_horizon = db.Column(db.String(20))
-    preferred_industries = db.Column(db.String(200))  # Store as comma-separated values
-    investment_experience = db.Column(db.Integer)
-    years_investing = db.Column(db.Integer)
-    
-    # Investment Goals
-    primary_investment_goal = db.Column(db.String(50))
-    secondary_investment_goals = db.Column(db.String(200))  # Store as comma-separated values
-    sustainable_investing = db.Column(db.Boolean)
-    
-    # Portfolio Review
-    has_existing_portfolio = db.Column(db.Boolean)
-    
-    last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<InvestmentProfile {self.user_id}>'
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)

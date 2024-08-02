@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Stock Portfolio Analyzer{% endblock %}
+
+{% block additional_css %}
+<style>
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .dashboard-item {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        text-align: center;
+        margin: 1.5rem; /* Add margin to create a gap between each dashboard item */
+        transition: all 0.3s ease;
+    }
+    .dashboard-item:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .dashboard-item h2 {
+        color: #111827;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    .dashboard-item a {
+        color: #6366f1;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .dashboard-item a:hover {
+        color: #4f46e5;
+    }
+    .portfolio-item {
+        grid-column: span 4;
+        background-color: #f0f9ff;
+        border: 2px solid #6366f1;
+    }
+    .portfolio-item h2 {
+        font-size: 1.5rem;
+        color: #6366f1;
+    }
+    .left-column {
+        grid-column: span 2;
+    }
+    .right-column {
+        grid-column: span 2;
+    }
+    .getting-started {
+        background-color: #f3f4f6;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+    .getting-started h2 {
+        color: #111827;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+
+<div class="dashboard-grid">
+    <div class="dashboard-item portfolio-item">
+        <h2>Portfolio</h2>
+        <a href="#portfolio">Manage Your Portfolio</a>
+    </div>
+    
+    <div class="left-column">
+        <div class="dashboard-item">
+            <h2>Stock Research</h2>
+            <a href="#stock-research">Research Stocks</a>
+        </div>
+        <div class="dashboard-item">
+            <h2>Analytics</h2>
+            <a href="#analytics">View Analytics</a>
+        </div>
+        <div class="dashboard-item">
+            <h2>AI Insights & Recommendations</h2>
+            <a href="#ai-insights">Get Insights</a>
+        </div>
+    </div>
+    
+    <div class="right-column">
+        <div class="dashboard-item">
+            <h2>News Feed</h2>
+            <a href="#news-feed">Latest News</a>
+        </div>
+        <div class="dashboard-item">
+            <h2>Profile</h2>
+            <a href="{{ url_for('main.profile') }}">View Profile</a>
+        </div>
+        <div class="dashboard-item">
+            <h2>Investment Survey</h2>
+            <a href="{{ url_for('main.investment_survey') }}">Take Survey</a>
+        </div>
+    </div>
+</div>
+
+<div class="getting-started">
+    <h2>Getting Started</h2>
+    <p>Welcome to your Stock Portfolio Analyzer dashboard! Here's how to get started:</p>
+    <ol class="list-decimal list-inside mt-2">
+        <li>Complete your <a href="{{ url_for('main.investment_survey') }}" class="text-indigo-600 hover:text-indigo-800">Investment Survey</a> to personalize your experience</li>
+        <li>Add stocks to your portfolio in the Portfolio section</li>
+        <li>Explore the Analytics to gain insights into your investments</li>
+        <li>Use the AI Insights & Recommendations for personalized advice</li>
+    </ol>
+</div>
+{% endblock %}
