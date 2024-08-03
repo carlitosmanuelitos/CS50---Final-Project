@@ -17,7 +17,7 @@ Functions:
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from ..models import User
+from ..models import User, Portfolio
 from .. import db
 from ..forms.auth_forms import RegisterForm, LoginForm
 
@@ -33,6 +33,9 @@ def register():
         new_user = User(email=form.email.data, username=form.username.data)
         new_user.set_password(form.password.data)
         db.session.add(new_user)
+        db.session.flush()  # This assigns an ID to the user
+        new_portfolio = Portfolio(owner=new_user, name=f"{new_user.username}'s Portfolio")
+        db.session.add(new_portfolio)
         db.session.commit()
         return render_template('login.html', form=LoginForm(), show_notification=True, notification_message='Registration successful. Please log in.')
     

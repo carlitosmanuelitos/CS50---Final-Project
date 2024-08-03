@@ -1,69 +1,378 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Stock Portfolio Analyzer{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    {% block additional_css %}{% endblock %}
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <a href="{{ url_for('main.index') }}" class="logo">SPA</a>
-            <div class="nav-links">
-                <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
-                {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('main.profile') }}" class="nav-link">Profile</a>
-                    <a href="{{ url_for('main.investment_survey') }}" class="nav-link">Investment Survey</a>
-                    <a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a>
-                {% else %}
-                    <a href="{{ url_for('auth.login') }}" class="nav-link">Login</a>
-                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Register</a>
-                {% endif %}
-            </div>
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
+    password_hash = db.Column(db.String(128))
+    portfolio = db.relationship('Portfolio', backref='owner', uselist=False)
+    investment_profile = db.relationship('InvestmentProfile', backref='user', uselist=False)
+    transactions = db.relationship('Transaction', backref='user', lazy='dynamic')
+    has_completed_survey = db.Column(db.Boolean, default=False)
+
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+class InvestmentProfile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
+    
+    # Personal Information
+    age = db.Column(db.Integer)
+    country = db.Column(db.String(2))
+    education_level = db.Column(db.String(20))
+    
+    # Financial Information
+    annual_income = db.Column(db.Float)
+    monthly_investment = db.Column(db.Float)
+    net_worth = db.Column(db.Float)
+    
+    # Investment Preferences
+    risk_tolerance = db.Column(db.Integer)
+    investment_horizon = db.Column(db.String(20))
+    preferred_industries = db.Column(db.String(200))  # Store as comma-separated values
+    investment_experience = db.Column(db.Integer)
+    years_investing = db.Column(db.Integer)
+    
+    # Investment Goals
+    primary_investment_goal = db.Column(db.String(50))
+    secondary_investment_goals = db.Column(db.String(200))  # Store as comma-separated values
+    sustainable_investing = db.Column(db.Boolean)
+    
+    # Portfolio Review
+    has_existing_portfolio = db.Column(db.Boolean)
+    
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<InvestmentProfile {self.user_id}>'
+
+class Portfolio(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
+    stocks = db.relationship('Stock', backref='portfolio', lazy='dynamic')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    @property
+    def total_value(self):
+        return sum(stock.current_value for stock in self.stocks)
+
+    @property
+    def total_gain_loss(self):
+        return sum(stock.gain_loss for stock in self.stocks)
+
+
+
+
+
+portfolio = Blueprint('portfolio', __name__)
+
+
+
+@portfolio.route('/portfolio', methods=['GET', 'POST'])
+@login_required
+def view_portfolio():
+    # Ensure the user has a portfolio
+    if not current_user.portfolio:
+        new_portfolio = Portfolio(owner=current_user, name=f"{current_user.username}'s Portfolio")
+        db.session.add(new_portfolio)
+        db.session.commit()
+        flash('A new portfolio has been created for you.', 'info')
+
+    form = AddStockForm()
+    if form.validate_on_submit():
+        stock = Stock(
+            ticker=form.ticker.data.upper(),
+            shares=form.shares.data,
+            purchase_price=form.purchase_price.data,
+            purchase_date=form.purchase_date.data,
+            portfolio_id=current_user.portfolio.id
+        )
+        stock.update_price()  # Fetch current price from yfinance
+        db.session.add(stock)
+        db.session.commit()
+        flash(f'Stock {stock.ticker} added to your portfolio!', 'success')
+        return redirect(url_for('portfolio.view_portfolio'))
+
+    user_portfolio = current_user.portfolio
+    stocks = user_portfolio.stocks.all()
+    if request.method == 'POST' and 'update_prices' in request.form:
+        tickers = [stock.ticker for stock in stocks]
+        updated_prices = update_stock_prices(tickers)
+        for stock in stocks:
+            stock.current_price = updated_prices.get(stock.ticker, stock.current_price)
+        db.session.commit()
+        flash('Stock prices updated!', 'success')
+
+    return render_template('portfolio.html', form=form, stocks=stocks, portfolio=user_portfolio)
+
+@portfolio.route('/portfolio/remove/<int:stock_id>', methods=['POST'])
+@login_required
+def remove_stock(stock_id):
+    stock = Stock.query.get_or_404(stock_id)
+    if stock.portfolio.user_id != current_user.id:
+        flash('You do not have permission to remove this stock.', 'danger')
+        return redirect(url_for('portfolio.view_portfolio'))
+    
+    db.session.delete(stock)
+    db.session.commit()
+    flash(f'Stock {stock.ticker} removed from your portfolio.', 'success')
+    return redirect(url_for('portfolio.view_portfolio'))
+
+# Add more portfolio-related routes here as needed
+
+from flask_wtf import FlaskForm
+from wtforms import StringField, FloatField, DateField, SubmitField
+from wtforms.validators import DataRequired, Length, NumberRange
+
+class AddStockForm(FlaskForm):
+    ticker = StringField('Ticker', validators=[DataRequired(), Length(min=1, max=10)])
+    shares = FloatField('Number of Shares', validators=[DataRequired(), NumberRange(min=0.01)])
+    purchase_price = FloatField('Purchase Price', validators=[DataRequired(), NumberRange(min=0.01)])
+    purchase_date = DateField('Purchase Date', validators=[DataRequired()])
+    submit = SubmitField('Add Stock')
+    
+    
+{% extends "base.html" %}
+
+{% block title %}Your Portfolio{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Your Portfolio</h1>
+
+{% if portfolio %}
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Portfolio Summary</h2>
+        <p>Total Value: ${{ "%.2f"|format(portfolio.total_value) }}</p>
+        <p>Total Gain/Loss: ${{ "%.2f"|format(portfolio.total_gain_loss) }}</p>
+        <p>Number of Positions: {{ stocks|length }}</p>
+    </div>
+
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Your Holdings</h2>
+        <form method="POST">
+            <input type="hidden" name="update_prices" value="1">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Update Prices
+            </button>
+        </form>
+        <table class="w-full mt-4">
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Company Name</th>
+                    <th>Shares</th>
+                    <th>Purchase Price</th>
+                    <th>Current Price</th>
+                    <th>Market Value</th>
+                    <th>Gain/Loss ($)</th>
+                    <th>Gain/Loss (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in stocks %}
+                <tr>
+                    <td>{{ stock.ticker }}</td>
+                    <td>{{ stock.company_name }}</td>
+                    <td>{{ stock.shares }}</td>
+                    <td>${{ "%.2f"|format(stock.purchase_price) }}</td>
+                    <td>${{ "%.2f"|format(stock.current_price) }}</td>
+                    <td>${{ "%.2f"|format(stock.current_value) }}</td>
+                    <td>${{ "%.2f"|format(stock.gain_loss) }}</td>
+                    <td>{{ "%.2f"|format(stock.gain_loss_percentage) }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p>You don't have a portfolio yet. Add some stocks to get started!</p>
+{% endif %}
+
+<div class="mt-8">
+    <h2 class="text-2xl font-semibold mb-4">Add a Stock</h2>
+    <form method="POST" action="{{ url_for('main.portfolio') }}">
+        {{ form.hidden_tag() }}
+        <div class="mb-4">
+            {{ form.ticker.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+            {{ form.ticker(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
         </div>
-    </nav>
-
-    <main class="main-content">
-        <div class="container">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            {% block content %}{% endblock %}
+        <div class="mb-4">
+            {{ form.shares.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+            {{ form.shares(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
         </div>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <p class="text-center">&copy; 2023 Stock Portfolio Analyzer. All rights reserved.</p>
+        <div class="mb-4">
+            {{ form.purchase_price.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+            {{ form.purchase_price(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
         </div>
-    </footer>
+        <div class="mb-4">
+            {{ form.purchase_date.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+            {{ form.purchase_date(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", type="date") }}
+        </div>
+        {{ form.submit(class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline") }}
+    </form>
+</div>
+{% endblock %}
 
-    {% block additional_scripts %}{% endblock %}
-    <script>
-    function showNotification(message, duration = 3000) {
-        const notification = document.createElement('div');
-        notification.textContent = message;
-        notification.style.cssText = `
-            position: fixed; top: 20px; left: 50%;
-            transform: translateX(-50%); padding: 10px 20px;
-            background-color: #4CAF50; color: white;
-            border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            z-index: 1000; transition: opacity 0.5s;
-        `;
-        document.body.appendChild(notification);
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => notification.remove(), 500);
-        }, duration);
-    }
-</script>
-</body>
-</html>
+
+"""
+Main routes for the Stock AI Portfolio Tracking app.
+
+This module handles the main functionality of the application, including the home page,
+user profile, investment survey, and dashboard. It defines routes for these features
+and interacts with the database to store and retrieve user data.
+
+Routes:
+    /: Home page
+    /profile: User profile page
+    /investment-survey: Investment profile survey
+    /update-profile: Update user profile
+    /dashboard: User dashboard
+
+Functions:
+    index: Render the home page
+    profile: Render the user profile page
+    investment_survey: Handle the investment profile survey
+    update_profile: Handle user profile updates
+    dashboard: Render the user dashboard
+"""
+
+from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask_login import login_required, current_user
+from ..models import User, Portfolio, InvestmentProfile
+from .. import db
+from datetime import datetime
+from ..forms.profile_forms import InvestmentSurveyForm, UpdateProfileForm
+
+# ... rest of the file remains the same
+
+main = Blueprint('main', __name__)
+
+@main.route('/')
+def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+    return render_template('index.html')
+
+@main.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
+
+@main.route('/profile')
+@login_required
+def profile():
+    investment_profile = InvestmentProfile.query.filter_by(user_id=current_user.id).first()
+    return render_template('profile.html', user=current_user, investment_profile=investment_profile)
+
+@main.route('/investment-survey', methods=['GET', 'POST'])
+@login_required
+def investment_survey():
+    profile = InvestmentProfile.query.filter_by(user_id=current_user.id).first()
+    form = InvestmentSurveyForm(obj=profile) if profile else InvestmentSurveyForm()
+    
+    if form.validate_on_submit():
+        if not profile:
+            profile = InvestmentProfile(user_id=current_user.id)
+        
+        try:
+            form.populate_obj(profile)
+            
+            # Handle multi-select fields
+            profile.preferred_industries = ','.join(form.preferred_industries.data)
+            profile.secondary_investment_goals = ','.join(form.secondary_investment_goals.data)
+            
+            # Handle boolean fields
+            profile.sustainable_investing = form.sustainable_investing.data == 'yes'
+            profile.has_existing_portfolio = form.has_existing_portfolio.data == 'yes'
+            
+            db.session.add(profile)
+            current_user.has_completed_survey = True
+            db.session.commit()
+            flash('Your investment profile has been updated successfully.', 'success')
+            return redirect(url_for('main.profile'))
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error saving profile: {str(e)}")
+            flash('An error occurred while saving your profile. Please try again.', 'error')
+    elif form.errors:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error in {field}: {error}", 'error')
+    
+    return render_template('investment_survey.html', form=form)
+    
+    
+"""
+Authentication routes for the Stock AI Portfolio Tracking app.
+
+This module handles user registration, login, and logout functionality. It defines
+routes for user authentication and uses Flask-Login for managing user sessions.
+
+Routes:
+    /register: Handle user registration
+    /login: Handle user login
+    /logout: Handle user logout
+
+Functions:
+    register: Handle user registration process
+    login: Handle user login process
+    logout: Handle user logout process
+"""
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from ..models import User, Portfolio
+from .. import db
+from ..forms.auth_forms import RegisterForm, LoginForm
+
+auth = Blueprint('auth', __name__)
+
+@auth.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+
+    form = RegisterForm()
+    if form.validate_on_submit():
+        new_user = User(email=form.email.data, username=form.username.data)
+        new_user.set_password(form.password.data)
+        db.session.add(new_user)
+        db.session.flush()  # This assigns an ID to the user
+        new_portfolio = Portfolio(owner=new_user, name=f"{new_user.username}'s Portfolio")
+        db.session.add(new_portfolio)
+        db.session.commit()
+        return render_template('login.html', form=LoginForm(), show_notification=True, notification_message='Registration successful. Please log in.')
+    
+    return render_template('register.html', form=form)
+
+@auth.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            if not user.has_completed_survey:
+                return redirect(url_for('main.investment_survey'))
+            return redirect(next_page or url_for('main.dashboard'))
+        flash('Invalid email or password. Please try again.', 'error')
+    return render_template('login.html', form=form)
+
+@auth.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out successfully.', 'success')
+    return redirect(url_for('main.index'))
+    
+    

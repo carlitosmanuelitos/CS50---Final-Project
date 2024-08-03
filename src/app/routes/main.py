@@ -42,18 +42,11 @@ def index():
 def dashboard():
     return render_template('dashboard.html')
 
-@main.route('/profile', methods=['GET', 'POST'])
+@main.route('/profile')
 @login_required
 def profile():
-    form = UpdateProfileForm(obj=current_user)
     investment_profile = InvestmentProfile.query.filter_by(user_id=current_user.id).first()
-    if form.validate_on_submit():
-        form.populate_obj(current_user)
-        db.session.commit()
-        flash('Profile updated successfully!', 'success')
-        return redirect(url_for('main.profile'))
-    return render_template('profile.html', form=form, user=current_user, investment_profile=investment_profile)
-
+    return render_template('profile.html', user=current_user, investment_profile=investment_profile)
 
 @main.route('/investment-survey', methods=['GET', 'POST'])
 @login_required

@@ -14,7 +14,7 @@
             <div class="nav-links">
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
-                    <a href="#portfolio" class="nav-link">Portfolio</a>
+                    <a href="{{ url_for('portfolio.view_portfolio') }}" class="nav-link">Portfolio</a>
                     <a href="#analytics" class="nav-link">Analytics</a>
                     <a href="#stock-research" class="nav-link">Stock Research</a>
                     <a href="#news-feed" class="nav-link">News Feed</a>

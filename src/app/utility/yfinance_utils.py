@@ -1,12 +1,9 @@
 import yfinance as yf
-from functools import lru_cache
-from datetime import datetime, timedelta
+from datetime import datetime
 
-@lru_cache(maxsize=100)
-def get_stock_data(ticker, expire_after=300):
+def get_stock_data(ticker):
     """
-    Fetch stock data from yfinance API with caching.
-    Cache expires after 5 minutes (300 seconds) by default.
+    Fetch stock data from yfinance API.
     """
     stock = yf.Ticker(ticker)
     info = stock.info
@@ -21,14 +18,15 @@ def get_stock_data(ticker, expire_after=300):
         'timestamp': datetime.now(),
     }
 
-def update_stock_prices(stocks):
+def update_stock_prices(tickers):
     """
-    Update current prices for a list of stocks.
+    Update current prices for a list of stock tickers.
     """
-    for stock in stocks:
-        data = get_stock_data(stock.ticker)
-        stock.current_price = data['current_price']
-        stock.last_updated = datetime.now()
+    updated_data = {}
+    for ticker in tickers:
+        data = get_stock_data(ticker)
+        updated_data[ticker] = data['current_price']
+    return updated_data
 
 def get_stock_metadata(ticker):
     """
@@ -47,3 +45,5 @@ def get_stock_metadata(ticker):
         'debt': info.get('totalDebt', 0),
         'description': info.get('longBusinessSummary', ''),
     }
+    
+    

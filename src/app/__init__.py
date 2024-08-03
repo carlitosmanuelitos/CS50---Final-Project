@@ -19,7 +19,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
-
+# Create db instance here, but don't initialize it yet
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
@@ -40,11 +40,13 @@ def create_app(config_name='default'):
     login_manager.login_view = 'auth.login'
 
     with app.app_context():
+        # Import models here
         from . import models
-        from .routes import auth, main
-        
+        from .routes import auth, main, portfolio
+
         app.register_blueprint(auth.auth)
         app.register_blueprint(main.main)
+        app.register_blueprint(portfolio.portfolio)
 
         # Create tables
         db.create_all()

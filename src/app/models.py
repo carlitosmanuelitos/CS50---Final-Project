@@ -5,23 +5,23 @@ This module defines the database schema using SQLAlchemy ORM. It includes models
 users, portfolios, stocks, stock metadata, investment profiles, and transactions.
 """
 
-from src.app import db
+from . import db  # Change this line
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
+from app.utility.yfinance_utils import get_stock_data
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    portfolios = db.relationship('Portfolio', backref='owner', lazy='dynamic')
+    portfolio = db.relationship('Portfolio', backref='owner', uselist=False)
     investment_profile = db.relationship('InvestmentProfile', backref='user', uselist=False)
     transactions = db.relationship('Transaction', backref='user', lazy='dynamic')
     has_completed_survey = db.Column(db.Boolean, default=False)
 
 
-    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -65,7 +65,7 @@ class InvestmentProfile(db.Model):
 class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
     stocks = db.relationship('Stock', backref='portfolio', lazy='dynamic')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -103,6 +103,13 @@ class Stock(db.Model):
             return (self.current_price - self.purchase_price) / self.purchase_price * 100
         return 0
 
+    def update_price(self):
+        data = get_stock_data(self.ticker)
+        self.current_price = data['current_price']
+        self.company_name = data['company_name']
+        self.last_updated = datetime.now()
+        return self
+
 class StockMetadata(db.Model):
     ticker = db.Column(db.String(10), primary_key=True)
     company_name = db.Column(db.String(100))
@@ -127,3 +134,4 @@ class Transaction(db.Model):
     @property
     def total_value(self):
         return self.shares * self.price
+    

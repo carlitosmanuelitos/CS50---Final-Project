@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Your Portfolio{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Your Portfolio</h1>
+
+{% if portfolio %}
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Portfolio Summary</h2>
+        <p>Total Value: ${{ "%.2f"|format(portfolio.total_value) }}</p>
+        <p>Total Gain/Loss: ${{ "%.2f"|format(portfolio.total_gain_loss) }}</p>
+        <p>Number of Positions: {{ stocks|length }}</p>
+    </div>
+
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Your Holdings</h2>
+        <form method="POST">
+            <input type="hidden" name="update_prices" value="1">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Update Prices
+            </button>
+        </form>
+        <table class="w-full mt-4">
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Company Name</th>
+                    <th>Shares</th>
+                    <th>Purchase Price</th>
+                    <th>Current Price</th>
+                    <th>Market Value</th>
+                    <th>Gain/Loss ($)</th>
+                    <th>Gain/Loss (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in stocks %}
+                <tr>
+                    <td>{{ stock.ticker }}</td>
+                    <td>{{ stock.company_name }}</td>
+                    <td>{{ stock.shares }}</td>
+                    <td>${{ "%.2f"|format(stock.purchase_price) }}</td>
+                    <td>${{ "%.2f"|format(stock.current_price) }}</td>
+                    <td>${{ "%.2f"|format(stock.current_value) }}</td>
+                    <td>${{ "%.2f"|format(stock.gain_loss) }}</td>
+                    <td>{{ "%.2f"|format(stock.gain_loss_percentage) }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p>You don't have a portfolio yet. Add some stocks to get started!</p>
+{% endif %}
+
+<div class="mt-8">
+    <h2 class="text-2xl font-semibold mb-4">Add a Stock</h2>
+    <form method="POST" action="{{ url_for('portfolio.view_portfolio') }}">
+        {{ form.hidden_tag() }}
+        <div class="mb-4">
+            {{ form.ticker.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+            {{ form.ticker(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+        </div>
+        <div class="mb-4">
+            {{ form.shares.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+            {{ form.shares(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+        </div>
+        <div class="mb-4">
+            {{ form.purchase_price.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+            {{ form.purchase_price(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+        </div>
+        <div class="mb-4">
+            {{ form.purchase_date.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+            {{ form.purchase_date(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", type="date") }}
+        </div>
+        {{ form.submit(class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline") }}
+    </form>
+</div>
+{% endblock %}
